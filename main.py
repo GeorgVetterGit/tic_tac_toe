@@ -23,13 +23,16 @@ grid = [[None for _ in range(3)] for _ in range(3)]  # Initialize a 3x3 grid
 
 agent = agents.random_agent()  # Initialize the agent
 
+# set turn variable
+turn = 'X'  # Player starts with 'X'
+
 # Game loop
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN and turn == 'X':
             # Get the mouse position
             mouse_x, mouse_y = event.pos
             # Check if the click is within the grid area
@@ -42,7 +45,24 @@ while running:
                 if grid[cell_y][cell_x] is None:
                     # Mark the cell with 'X'
                     grid[cell_y][cell_x] = 'X'
+                    # Switch turn to 'O'
+                    turn = 'O'
                 
+
+    if turn == 'O':
+        # Get the agent's move
+        try:
+            move = agent.get_move(grid)
+            cell_x, cell_y = move
+            # Check if the cell is already occupied
+            if grid[cell_x][cell_y] is None:
+                # Mark the cell with 'O'
+                grid[cell_x][cell_y] = 'O'
+                # Switch turn to 'X'
+                turn = 'X'
+        except ValueError:
+            print("No available moves left for the agent.")
+            running = False
 
     # Check if the game should end
     if any(all(cell == 'X' for cell in row) for row in grid) or \
@@ -89,6 +109,14 @@ while running:
                                  (x * screen_width // 3 + 10, 
                                   y * screen_width // 3 + menu_height + screen_width // 3 - 10), 
                                  15)
+    for y in range(3):
+        for x in range(3):
+            if grid[y][x] == 'O':
+                pygame.draw.circle(screen, COLORS['BLACK'], 
+                                   (x * screen_width // 3 + screen_width // 6, 
+                                    y * screen_width // 3 + menu_height + screen_width // 6), 
+                                   screen_width // 6 - 10, 
+                                   15)
 
     # Update the display
     pygame.display.flip()
