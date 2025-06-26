@@ -18,6 +18,8 @@ COLORS = {'BLACK': (0, 0, 0),
           'GREEN': (0, 255, 0),
           'BLUE': (0, 0, 255)}
 
+grid = [[None for _ in range(3)] for _ in range(3)]  # Initialize a 3x3 grid
+
 # Game loop
 running = True
 while running:
@@ -32,7 +34,13 @@ while running:
                 # Calculate the grid cell based on mouse position
                 cell_x = mouse_x // (screen_width // 3)
                 cell_y = (mouse_y - menu_height) // (screen_width // 3)
-                print(f"Clicked on cell: ({cell_x}, {cell_y})")
+
+                # Check if the cell is already occupied
+                if grid[cell_y][cell_x] is None:
+                    # Mark the cell with 'X'
+                    grid[cell_y][cell_x] = 'X'
+                
+
 
     # Fill the background
     screen.fill(COLORS['WHITE'])  # Black color
@@ -42,6 +50,23 @@ while running:
         pygame.draw.line(screen, COLORS['BLACK'], (x * screen_width // 3, menu_height), (x * screen_width // 3, screen_height), 2)
     for y in range(1, 3):
         pygame.draw.line(screen, COLORS['BLACK'], (0, y * screen_width // 3 + menu_height), (screen_width, y * screen_width // 3 + menu_height), 2)   
+    
+    # Draw the grid cells
+    for y in range(3):
+        for x in range(3):
+            if grid[y][x] == 'X':
+                pygame.draw.line(screen, COLORS['BLACK'], 
+                                 (x * screen_width // 3 + 10, 
+                                  y * screen_width // 3 + menu_height + 10), 
+                                 (x * screen_width // 3 + screen_width // 3 - 10, 
+                                  y * screen_width // 3 + menu_height + screen_width // 3 - 10), 
+                                 15)
+                pygame.draw.line(screen, COLORS['BLACK'], 
+                                 (x * screen_width // 3 + screen_width // 3 - 10, 
+                                  y * screen_width // 3 + menu_height + 10), 
+                                 (x * screen_width // 3 + 10, 
+                                  y * screen_width // 3 + menu_height + screen_width // 3 - 10), 
+                                 15)
 
     # Update the display
     pygame.display.flip()
