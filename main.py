@@ -1,4 +1,5 @@
 import pygame
+import agents
 
 # Initialize PyGame
 pygame.init()
@@ -19,6 +20,8 @@ COLORS = {'BLACK': (0, 0, 0),
           'BLUE': (0, 0, 255)}
 
 grid = [[None for _ in range(3)] for _ in range(3)]  # Initialize a 3x3 grid
+
+agent = agents.random_agent()  # Initialize the agent
 
 # Game loop
 running = True
