@@ -41,6 +41,25 @@ while running:
                     grid[cell_y][cell_x] = 'X'
                 
 
+    # Check if the game should end
+    if any(all(cell == 'X' for cell in row) for row in grid) or \
+       any(all(grid[y][x] == 'X' for y in range(3)) for x in range(3)) or \
+       all(grid[i][i] == 'X' for i in range(3)) or \
+       all(grid[i][2 - i] == 'X' for i in range(3)):
+        print("Player X wins!")
+        running = False
+    
+    # Check for a draw
+    if all(cell is not None for row in grid for cell in row):
+        print("It's a draw!")
+        running = False
+
+    if any(all(cell == 'O' for cell in row) for row in grid) or \
+       any(all(grid[y][x] == 'O' for y in range(3)) for x in range(3)) or \
+       all(grid[i][i] == 'O' for i in range(3)) or \
+       all(grid[i][2 - i] == 'O' for i in range(3)):
+        print("Computer wins!")
+        running = False
 
     # Fill the background
     screen.fill(COLORS['WHITE'])  # Black color
