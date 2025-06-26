@@ -24,6 +24,15 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Get the mouse position
+            mouse_x, mouse_y = event.pos
+            # Check if the click is within the grid area
+            if mouse_y > menu_height:
+                # Calculate the grid cell based on mouse position
+                cell_x = mouse_x // (screen_width // 3)
+                cell_y = (mouse_y - menu_height) // (screen_width // 3)
+                print(f"Clicked on cell: ({cell_x}, {cell_y})")
 
     # Fill the background
     screen.fill(COLORS['WHITE'])  # Black color
