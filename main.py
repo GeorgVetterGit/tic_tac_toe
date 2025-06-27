@@ -1,5 +1,6 @@
 import pygame
 import agents
+import numpy as np
 
 # Initialize PyGame
 pygame.init()
@@ -30,7 +31,10 @@ grid = [[None for _ in range(3)] for _ in range(3)]  # Initialize a 3x3 grid
 agent = agents.minimax_agent()  # Initialize the agent
 
 # set turn variable
-turn = 'X'  # Player starts with 'X'
+if np.random.rand() < 0.5:
+    turn = 'O'  # Agent starts with 'O'
+else:
+    turn = 'X'  # Player starts with 'X'
 
 # Game loop
 running = True
