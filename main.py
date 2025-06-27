@@ -100,7 +100,7 @@ while running:
     # Draw the menu
     pygame.draw.rect(screen, COLORS['MENU'], (0, 0, screen_width, menu_height))
     font = pygame.font.Font(None, 25)
-    text = font.render("Tic Tac Toe - Player X vs Random Agent O", True, COLORS['TEXT_COLOR'])
+    text = font.render(f"Tic Tac Toe - Player X vs {agent.name} O", True, COLORS['TEXT_COLOR'])
     text_rect = text.get_rect(center=(screen_width // 2, menu_height // 2))
     screen.blit(text, text_rect)
 
