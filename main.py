@@ -27,7 +27,7 @@ COLORS = {'BLACK': (0, 0, 0),
 
 grid = [[None for _ in range(3)] for _ in range(3)]  # Initialize a 3x3 grid
 
-agent = agents.random_agent()  # Initialize the agent
+agent = agents.minimax_agent()  # Initialize the agent
 
 # set turn variable
 turn = 'X'  # Player starts with 'X'
