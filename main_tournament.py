@@ -26,16 +26,27 @@ COLORS = {'BLACK': (0, 0, 0),
           'LINE_COLOR': (6, 64, 64),
           'TEXT_COLOR': (229, 229, 229)}  
 
-grid = [[None for _ in range(3)] for _ in range(3)]  # Initialize a 3x3 grid
+
+def initialize_game():
+    """Reset the game grid and turn."""
+    global grid, turn, agent
+    grid = [[None for _ in range(3)] for _ in range(3)]
+
+    if np.random.rand() < 0.5:
+        turn = 'O'
+        agent = agent_o
+    else:
+        turn = 'X'
+        agent = agent_x
+    return 0
+
+game_history = []  # To keep track of the game history
+game_count = 0  # To count the number of games played
 
 agent_x = agents.random_agent()  # Initialize the agent for 'X'
 agent_o = agents.random_agent()  # Initialize the agent for 'O'
 
-# set turn variable
-if np.random.rand() < 0.5:
-    turn = 'O'  # Agent starts with 'O'
-else:
-    turn = 'X'  # Player starts with 'X'
+rounds = initialize_game()  # Initialize the game
 
 # Game loop
 running = True
@@ -43,23 +54,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN and turn == 'X':
-            # Get the mouse position
-            mouse_x, mouse_y = event.pos
-            # Check if the click is within the grid area
-            if mouse_y > menu_height:
-                # Calculate the grid cell based on mouse position
-                cell_x = mouse_x // (screen_width // 3)
-                cell_y = (mouse_y - menu_height) // (screen_width // 3)
-
-                # Check if the cell is already occupied
-                if grid[cell_y][cell_x] is None:
-                    # Mark the cell with 'X'
-                    grid[cell_y][cell_x] = 'X'
-                    # Switch turn to 'O'
-                    turn = 'O'
                 
-
     if turn == 'O':
         # Get the agent's move
         try:
@@ -71,6 +66,22 @@ while running:
                 grid[cell_x][cell_y] = 'O'
                 # Switch turn to 'X'
                 turn = 'X'
+                agent = agent_x  # Switch to the agent for 'X'
+        except ValueError:
+            print("No available moves left for the agent.")
+            running = False
+    elif turn == 'X':
+        # Get the agent's move
+        try:
+            move = agent.get_move(grid)
+            cell_x, cell_y = move
+            # Check if the cell is already occupied
+            if grid[cell_x][cell_y] is None:
+                # Mark the cell with 'X'
+                grid[cell_x][cell_y] = 'X'
+                # Switch turn to 'O'
+                turn = 'O'
+                agent = agent_o  # Switch to the agent for 'O'
         except ValueError:
             print("No available moves left for the agent.")
             running = False
@@ -80,19 +91,34 @@ while running:
        any(all(grid[y][x] == 'X' for y in range(3)) for x in range(3)) or \
        all(grid[i][i] == 'X' for i in range(3)) or \
        all(grid[i][2 - i] == 'X' for i in range(3)):
-        print("Player X wins!")
-        running = False
+        print(f"{agent.name} X wins!")
+        game_history.append((game_count, rounds, agent.name, 'X'))  # Record the game result
+        rounds = initialize_game()  # Reset the game
+        game_count += 1
+
     
     # Check for a draw
     if all(cell is not None for row in grid for cell in row):
         print("It's a draw!")
-        running = False
+        game_history.append((game_count, rounds, None, 'Draw'))  # Record the game result
+        rounds = initialize_game()  # Reset the game
+        game_count += 1
+
 
     if any(all(cell == 'O' for cell in row) for row in grid) or \
        any(all(grid[y][x] == 'O' for y in range(3)) for x in range(3)) or \
        all(grid[i][i] == 'O' for i in range(3)) or \
        all(grid[i][2 - i] == 'O' for i in range(3)):
-        print("Computer wins!")
+        print(f"{agent.name} O wins!")
+        game_history.append((game_count, rounds, agent.name, 'O'))  # Record the game result
+        rounds = initialize_game()  # Reset the game
+        game_count += 1
+
+    
+    rounds += 1
+
+    if game_count >= 10000:  # Limit the number of games to 100
+        print("Reached the maximum number of games.")
         running = False
 
     # Fill the background
@@ -100,8 +126,8 @@ while running:
 
     # Draw the menu
     pygame.draw.rect(screen, COLORS['MENU'], (0, 0, screen_width, menu_height))
-    font = pygame.font.Font(None, 25)
-    text = font.render(f"Tic Tac Toe - Player X vs {agent.name} O", True, COLORS['TEXT_COLOR'])
+    font = pygame.font.Font(None, 20)
+    text = font.render(f"Tic Tac Toe - {agent.name} X vs {agent.name} O", True, COLORS['TEXT_COLOR'])
     text_rect = text.get_rect(center=(screen_width // 2, menu_height // 2))
     screen.blit(text, text_rect)
 
@@ -138,6 +164,10 @@ while running:
 
     # Update the display
     pygame.display.flip()
+
+with open('game_history.txt', 'w') as f:
+    for game in game_history:
+        f.write(f"Game {game[0]}: Rounds {game[1]}, Winner: {game[2]}, Result: {game[3]}\n")
 
 # Quit PyGame
 pygame.quit()
