@@ -47,6 +47,7 @@ agent_x = agents.random_agent()  # Initialize the agent for 'X'
 agent_o = agents.random_agent()  # Initialize the agent for 'O'
 
 rounds = initialize_game()  # Initialize the game
+init_turn = turn  # Store the initial turn
 
 # Game loop
 running = True
@@ -91,17 +92,19 @@ while running:
        any(all(grid[y][x] == 'X' for y in range(3)) for x in range(3)) or \
        all(grid[i][i] == 'X' for i in range(3)) or \
        all(grid[i][2 - i] == 'X' for i in range(3)):
-        print(f"{agent.name} X wins!")
-        game_history.append((game_count, rounds, agent.name, 'X'))  # Record the game result
+        print(f"{agent_x.name} X wins!")
+        game_history.append((game_count, rounds, init_turn, agent_x.name, 'X'))  # Record the game result
         rounds = initialize_game()  # Reset the game
+        init_turn = turn  # Store the initial turn
         game_count += 1
 
     
     # Check for a draw
     if all(cell is not None for row in grid for cell in row):
         print("It's a draw!")
-        game_history.append((game_count, rounds, None, 'Draw'))  # Record the game result
+        game_history.append((game_count, rounds, init_turn, None, 'Draw'))  # Record the game result
         rounds = initialize_game()  # Reset the game
+        init_turn = turn  # Store the initial turn
         game_count += 1
 
 
@@ -109,9 +112,10 @@ while running:
        any(all(grid[y][x] == 'O' for y in range(3)) for x in range(3)) or \
        all(grid[i][i] == 'O' for i in range(3)) or \
        all(grid[i][2 - i] == 'O' for i in range(3)):
-        print(f"{agent.name} O wins!")
-        game_history.append((game_count, rounds, agent.name, 'O'))  # Record the game result
+        print(f"{agent_o.name} O wins!")
+        game_history.append((game_count, rounds, init_turn, agent_o.name, 'O'))  # Record the game result
         rounds = initialize_game()  # Reset the game
+        init_turn = turn  # Store the initial turn
         game_count += 1
 
     
@@ -127,7 +131,7 @@ while running:
     # Draw the menu
     pygame.draw.rect(screen, COLORS['MENU'], (0, 0, screen_width, menu_height))
     font = pygame.font.Font(None, 20)
-    text = font.render(f"Tic Tac Toe - {agent.name} X vs {agent.name} O", True, COLORS['TEXT_COLOR'])
+    text = font.render(f"Tic Tac Toe - {agent_x.name} X vs {agent_o.name} O", True, COLORS['TEXT_COLOR'])
     text_rect = text.get_rect(center=(screen_width // 2, menu_height // 2))
     screen.blit(text, text_rect)
 
@@ -167,7 +171,7 @@ while running:
 
 with open(f'/Users/georg/Projects/Tiny Games in Python/tic_tac_toe/tic_tac_toe/results/{agent_x.name}_vs_{agent_o.name}.txt', 'w') as f:
     for game in game_history:
-        f.write(f"Game {game[0]}: Rounds {game[1]}, Winner: {game[2]}, Result: {game[3]}\n")
+        f.write(f"{game[0]}, {game[1]}, {game[2]}, {game[3]}, {game[4]}\n")
 
 # Quit PyGame
 pygame.quit()
