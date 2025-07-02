@@ -165,7 +165,7 @@ while running:
     # Update the display
     pygame.display.flip()
 
-with open('game_history.txt', 'w') as f:
+with open(f'/Users/georg/Projects/Tiny Games in Python/tic_tac_toe/tic_tac_toe/results/{agent_x.name}_vs_{agent_o.name}.txt', 'w') as f:
     for game in game_history:
         f.write(f"Game {game[0]}: Rounds {game[1]}, Winner: {game[2]}, Result: {game[3]}\n")
 
