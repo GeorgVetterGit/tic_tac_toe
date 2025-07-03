@@ -44,7 +44,7 @@ game_history = []  # To keep track of the game history
 game_count = 0  # To count the number of games played
 
 agent_x = agents.random_agent()  # Initialize the agent for 'X'
-agent_o = agents.random_agent()  # Initialize the agent for 'O'
+agent_o = agents.minimax_agent()  # Initialize the agent for 'O'
 
 rounds = initialize_game()  # Initialize the game
 init_turn = turn  # Store the initial turn
