@@ -21,8 +21,9 @@ class random_agent:
         return random.choice(available_moves)
 
 class minimax_agent:
-    def __init__(self):
+    def __init__(self, letter='O'):
         self.name = "Minimax Agent"
+        self.letter = letter  # 'O' for the agent, 'X' for the opponent
         
     def get_move(self, game_state:list[list[str]]) -> tuple[int, int]:
         """Uses the minimax algorithm to determine the best move for the agent.
@@ -36,7 +37,19 @@ class minimax_agent:
         """
         
         def minimax(state, depth, is_maximizing):
-            scores = {'X': -1, 'O': 1, 'draw': 0}
+            """Minimax algorithm to evaluate the best move for the agent.
+            Args:
+                state (list): The current state of the game.
+                depth (int): The current depth of the search tree.
+                is_maximizing (bool): True if the current player is the maximizing player (the agent), False otherwise.
+            Returns:
+                int: The score of the current state.
+            """
+            if self.letter == 'O':
+                scores = {'X': -1, 'O': 1, 'draw': 0}
+            else:
+                scores = {'X': 1, 'O': -1, 'draw': 0}
+
             winner = check_winner(state)
             if winner:
                 return scores[winner]
@@ -48,7 +61,7 @@ class minimax_agent:
                 for i in range(3):
                     for j in range(3):
                         if state[i][j] is None:
-                            state[i][j] = 'O'
+                            state[i][j] = self.letter
                             score = minimax(state, depth + 1, False)
                             state[i][j] = None
                             best_score = max(score, best_score)
@@ -58,7 +71,7 @@ class minimax_agent:
                 for i in range(3):
                     for j in range(3):
                         if state[i][j] is None:
-                            state[i][j] = 'X'
+                            state[i][j] = 'X' if self.letter == 'O' else 'O'
                             score = minimax(state, depth + 1, True)
                             state[i][j] = None
                             best_score = min(score, best_score)
@@ -85,7 +98,7 @@ class minimax_agent:
         best_score = float('-inf')
         for move in available_moves:
             i, j = move
-            game_state[i][j] = 'O'
+            game_state[i][j] = self.letter
             score = minimax(game_state, 0, False)
             game_state[i][j] = None
             if score > best_score:
