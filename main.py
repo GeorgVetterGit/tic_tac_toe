@@ -11,6 +11,9 @@ menu_height = 100
 screen_height = screen_width + menu_height
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+icon = pygame.image.load('/Users/georg/Projects/Tiny Games in Python/tic_tac_toe/tic_tac_toe/icon.png')
+pygame.display.set_icon(icon)  # Set the icon for the window
+
 # Set window title
 pygame.display.set_caption("Tic Tac Toe")
 
@@ -26,15 +29,34 @@ COLORS = {'BLACK': (0, 0, 0),
           'LINE_COLOR': (6, 64, 64),
           'TEXT_COLOR': (229, 229, 229)}  
 
-grid = [[None for _ in range(3)] for _ in range(3)]  # Initialize a 3x3 grid
+def initialize_game():
+    """Reset the game grid and turn."""
+    global grid, turn
+    grid = [[None for _ in range(3)] for _ in range(3)]  # Initialize a 3x3 grid
+    # set turn variable
+    if np.random.rand() < 0.5:
+        turn = 'O'  # Agent starts with 'O'
+    else:
+        turn = 'X'  # Player starts with 'X'
+    return '', grid, turn
 
 agent = agents.minimax_agent()  # Initialize the agent
+game_over, grid, turn = initialize_game()  # Initialize the game
 
-# set turn variable
-if np.random.rand() < 0.5:
-    turn = 'O'  # Agent starts with 'O'
-else:
-    turn = 'X'  # Player starts with 'X'
+def game_over_message(winner):
+    """Display the game over message."""
+    font = pygame.font.Font(None, 36)
+    text = font.render(f"{winner} wins!", True, COLORS['RED'])
+    text_rect = text.get_rect(center=(screen_width // 2, screen_height // 2))
+    screen.blit(text, text_rect)
+    # write time till game reset is 3 seconds
+    font = pygame.font.Font(None, 24)
+    text = font.render("Resetting in 3 seconds...", True, COLORS['TEXT_COLOR'])
+    text_rect = text.get_rect(center=(screen_width // 2, screen_height // 2 + 30))
+    screen.blit(text, text_rect)
+    # update the display
+    pygame.display.flip()
+    pygame.time.wait(3000)  # Wait for 3 seconds
 
 # Game loop
 running = True
@@ -68,31 +90,26 @@ while running:
             if grid[cell_x][cell_y] is None:
                 # Mark the cell with 'O'
                 grid[cell_x][cell_y] = 'O'
-                # Switch turn to 'X'
-                turn = 'X'
+                turn = 'X' # Switch turn to 'X'
         except ValueError:
-            print("No available moves left for the agent.")
-            running = False
+            game_over = 'Nobody' # If no moves left, it's a draw
 
     # Check if the game should end
     if any(all(cell == 'X' for cell in row) for row in grid) or \
        any(all(grid[y][x] == 'X' for y in range(3)) for x in range(3)) or \
        all(grid[i][i] == 'X' for i in range(3)) or \
        all(grid[i][2 - i] == 'X' for i in range(3)):
-        print("Player X wins!")
-        running = False
+        game_over = 'Player X'
     
     # Check for a draw
     if all(cell is not None for row in grid for cell in row):
-        print("It's a draw!")
-        running = False
+        game_over = 'Nobody'
 
     if any(all(cell == 'O' for cell in row) for row in grid) or \
        any(all(grid[y][x] == 'O' for y in range(3)) for x in range(3)) or \
        all(grid[i][i] == 'O' for i in range(3)) or \
        all(grid[i][2 - i] == 'O' for i in range(3)):
-        print("Computer wins!")
-        running = False
+        game_over = 'Agent O'
 
     # Fill the background
     screen.fill(COLORS['BACKGROUND'])  # Black color
@@ -134,6 +151,12 @@ while running:
                                     y * screen_width // 3 + menu_height + screen_width // 6), 
                                    screen_width // 6 - 10, 
                                    15)
+    
+    if game_over:
+        # Display the game over message
+        game_over_message(game_over)
+        # Reset the game
+        game_over, grid, turn = initialize_game()
 
     # Update the display
     pygame.display.flip()
