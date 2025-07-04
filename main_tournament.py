@@ -38,15 +38,23 @@ def initialize_game():
     else:
         turn = 'X'
         agent = agent_x
-    return 0
+    
+    rounds = 0
+    turn_count_x = 0
+    turn_count_o = 0
+    move_time_x = 0
+    move_time_o = 0
+
+    print(f"Game_count: {game_count}")
+    return rounds, turn_count_x, turn_count_o, move_time_x, move_time_o
 
 game_history = []  # To keep track of the game history
 game_count = 0  # To count the number of games played
 
 agent_x = agents.random_agent()  # Initialize the agent for 'X'
-agent_o = agents.minimax_agent()  # Initialize the agent for 'O'
+agent_o = agents.random_agent()  # Initialize the agent for 'O'
 
-rounds = initialize_game()  # Initialize the game
+rounds, turn_count_x, turn_count_o, move_time_x, move_time_o = initialize_game()  # Initialize the game
 init_turn = turn  # Store the initial turn
 
 # Game loop
@@ -56,9 +64,35 @@ while running:
         if event.type == pygame.QUIT:
             running = False
                 
-    if turn == 'O':
+    if turn == 'X':
         # Get the agent's move
         try:
+            start_time = pygame.time.get_ticks()  # Start time for the move
+            move = agent.get_move(grid)
+            end_time = pygame.time.get_ticks()  # End time for the move
+            move_time_x += end_time - start_time  # Accumulate the move time
+            turn_count_x += 1  # Increment the turn count for 'X'
+
+            cell_x, cell_y = move
+            # Check if the cell is already occupied
+            if grid[cell_x][cell_y] is None:
+                # Mark the cell with 'X'
+                grid[cell_x][cell_y] = 'X'
+                # Switch turn to 'O'
+                turn = 'O'
+                agent = agent_o  # Switch to the agent for 'O'
+        except ValueError:
+            print("No available moves left for the agent.")
+            running = False
+    elif turn == 'O':
+        # Get the agent's move
+        try:
+            start_time = pygame.time.get_ticks()  # Start time for the move
+            move = agent.get_move(grid)
+            end_time = pygame.time.get_ticks()  # End time for the move
+            move_time_o += end_time - start_time  # Accumulate the move time
+            turn_count_o += 1  # Increment the turn count for 'X'
+
             move = agent.get_move(grid)
             cell_x, cell_y = move
             # Check if the cell is already occupied
@@ -71,21 +105,6 @@ while running:
         except ValueError:
             print("No available moves left for the agent.")
             running = False
-    elif turn == 'X':
-        # Get the agent's move
-        try:
-            move = agent.get_move(grid)
-            cell_x, cell_y = move
-            # Check if the cell is already occupied
-            if grid[cell_x][cell_y] is None:
-                # Mark the cell with 'X'
-                grid[cell_x][cell_y] = 'X'
-                # Switch turn to 'O'
-                turn = 'O'
-                agent = agent_o  # Switch to the agent for 'O'
-        except ValueError:
-            print("No available moves left for the agent.")
-            running = False
 
     # Check if the game should end
     if any(all(cell == 'X' for cell in row) for row in grid) or \
@@ -93,8 +112,8 @@ while running:
        all(grid[i][i] == 'X' for i in range(3)) or \
        all(grid[i][2 - i] == 'X' for i in range(3)):
         print(f"{agent_x.name} X wins!")
-        game_history.append((game_count, rounds, init_turn, agent_x.name, 'X'))  # Record the game result
-        rounds = initialize_game()  # Reset the game
+        game_history.append((game_count, rounds, init_turn, agent_x.name, 'X',move_time_x/turn_count_x, move_time_o/turn_count_o))  # Record the game result
+        rounds, turn_count_x, turn_count_o, move_time_x, move_time_o = initialize_game()  # Reset the game
         init_turn = turn  # Store the initial turn
         game_count += 1
 
@@ -102,8 +121,8 @@ while running:
     # Check for a draw
     if all(cell is not None for row in grid for cell in row):
         print("It's a draw!")
-        game_history.append((game_count, rounds, init_turn, None, 'Draw'))  # Record the game result
-        rounds = initialize_game()  # Reset the game
+        game_history.append((game_count, rounds, init_turn, None, 'Draw',move_time_x/turn_count_x, move_time_o/turn_count_o))  # Record the game result
+        rounds, turn_count_x, turn_count_o, move_time_x, move_time_o = initialize_game()  # Reset the game
         init_turn = turn  # Store the initial turn
         game_count += 1
 
@@ -113,15 +132,15 @@ while running:
        all(grid[i][i] == 'O' for i in range(3)) or \
        all(grid[i][2 - i] == 'O' for i in range(3)):
         print(f"{agent_o.name} O wins!")
-        game_history.append((game_count, rounds, init_turn, agent_o.name, 'O'))  # Record the game result
-        rounds = initialize_game()  # Reset the game
+        game_history.append((game_count, rounds, init_turn, agent_o.name, 'O',move_time_x/turn_count_x, move_time_o/turn_count_o))  # Record the game result
+        rounds, turn_count_x, turn_count_o, move_time_x, move_time_o = initialize_game()  # Reset the game
         init_turn = turn  # Store the initial turn
         game_count += 1
 
     
     rounds += 1
 
-    if game_count >= 10000:  # Limit the number of games to 100
+    if game_count >= 100:  # Limit the number of games to 100
         print("Reached the maximum number of games.")
         running = False
 
@@ -171,7 +190,7 @@ while running:
 
 with open(f'/Users/georg/Projects/Tiny Games in Python/tic_tac_toe/tic_tac_toe/results/{agent_x.name}_vs_{agent_o.name}.txt', 'w') as f:
     for game in game_history:
-        f.write(f"{game[0]}, {game[1]}, {game[2]}, {game[3]}, {game[4]}\n")
+        f.write(f"{game[0]}, {game[1]}, {game[2]}, {game[3]}, {game[4]}, {game[5]}, {game[6]}\n")
 
 # Quit PyGame
 pygame.quit()
