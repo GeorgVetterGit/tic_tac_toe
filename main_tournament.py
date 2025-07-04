@@ -11,6 +11,9 @@ menu_height = 100
 screen_height = screen_width + menu_height
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+icon = pygame.image.load('/Users/georg/Projects/Tiny Games in Python/tic_tac_toe/tic_tac_toe/icon.png')
+pygame.display.set_icon(icon)  # Set the icon for the window
+
 # Set window title
 pygame.display.set_caption("Tic Tac Toe")
 
