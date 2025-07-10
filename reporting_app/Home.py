@@ -1,7 +1,7 @@
+import os
 import streamlit as st
 import pandas as pd
-import os
-import matplotlib.pyplot as plt
+
 
 st.set_page_config(layout="wide")
 
@@ -35,5 +35,5 @@ st.write("This section shows the distribution of wins among the agents in the to
 
 st.header("Game Statistics")
 st.write("This section provides a detailed overview of the game statistics, including the number of rounds played, the initial turn, and the winner of each game.")
-df = pd.concat([df_1, df_2, df_3], ignore_index=True)
-st.dataframe(df[['Game Count', 'Rounds', 'Initial Turn', 'Winner Agent', 'Winner Letter', 'X_Move_Time', 'O_Move_Time']], use_container_width=True)
+df_concat = pd.concat([df_1, df_2, df_3], ignore_index=True)
+st.dataframe(df_concat[['Game Count', 'Rounds', 'Initial Turn', 'Winner Agent', 'Winner Letter', 'X_Move_Time', 'O_Move_Time']], use_container_width=True)
