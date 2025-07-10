@@ -9,9 +9,9 @@ st.title("Tic Tac Toe Tournament Report")
 
 # Load the data
 try:
-    df_1 = pd.read_csv('tic_tac_toe/results/Q-Learning Agent_vs_Minimax Agent.txt', names=['Game Count', 'Rounds', 'Initial Turn', 'Winner Agent', 'Winner Letter', 'X_Move_Time', 'O_Move_Time'])
-    df_2 = pd.read_csv('tic_tac_toe/results/Q-Learning Agent_vs_Random Agent.txt', names=['Game Count', 'Rounds', 'Initial Turn', 'Winner Agent', 'Winner Letter', 'X_Move_Time', 'O_Move_Time'])
-    df_3 = pd.read_csv('tic_tac_toe/results/Random Agent_vs_Minimax Agent.txt', names=['Game Count', 'Rounds', 'Initial Turn', 'Winner Agent', 'Winner Letter', 'X_Move_Time', 'O_Move_Time'])
+    df_1 = pd.read_csv('results/Q-Learning Agent_vs_Minimax Agent.txt', names=['Game Count', 'Rounds', 'Initial Turn', 'Winner Agent', 'Winner Letter', 'X_Move_Time', 'O_Move_Time'])
+    df_2 = pd.read_csv('results/Q-Learning Agent_vs_Random Agent.txt', names=['Game Count', 'Rounds', 'Initial Turn', 'Winner Agent', 'Winner Letter', 'X_Move_Time', 'O_Move_Time'])
+    df_3 = pd.read_csv('results/Random Agent_vs_Minimax Agent.txt', names=['Game Count', 'Rounds', 'Initial Turn', 'Winner Agent', 'Winner Letter', 'X_Move_Time', 'O_Move_Time'])
 except FileNotFoundError:
     st.error(f"Results file not found. Please run main_tournament.py first. File List: {os.listdir()}")
     st.stop()
