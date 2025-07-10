@@ -2,27 +2,34 @@ import random
 import pickle
 import numpy as np
 
-class random_agent:
+class RandomAgent:
+    """Random agent that chooses a random move from the available moves."""
+
     def __init__(self):
         self.name = "Random Agent"
 
     def get_move(self, game_state:list[list[str]]) -> tuple[int, int]:
-        """generates random move for the agent by choosing a free field of the 3x3 tic-tac-toe grid.
+        """generates random move for the agent by choosing a free field of 
+        the 3x3 tic-tac-toe grid.
 
         Args:
-            game_state (list): A 3x3 list representing the current state of the game, where each element can be 'X', 'O', or None.
+            game_state (list): A 3x3 list representing the current state of the
+             game, where each element can be 'X', 'O', or None.
         Returns:
-            tuple: A tuple (row, col) representing the chosen move, where row and col are indices of the grid.
+            tuple: A tuple (row, col) representing the chosen move, where row 
+            and col are indices of the grid.
         Raises:
             ValueError: If there are no available moves left in the game state.
         """
-        
         available_moves = [(i, j) for i in range(3) for j in range(3) if game_state[i][j] is None]
         if not available_moves:
             raise ValueError("No available moves left")
         return random.choice(available_moves)
 
-class minimax_agent:
+class MinimaxAgent:
+    """Minimax agent that uses the minimax algorithm to make decisions.
+    This agent is designed to play as 'O'.
+    """
     def __init__(self, letter='O'):
         self.name = "Minimax Agent"
         self.letter = letter  # 'O' for the agent, 'X' for the opponent
@@ -108,7 +115,11 @@ class minimax_agent:
                 best_move = move
         return best_move
 
-class q_learning_agent:
+class QLearningAgent:
+    """Q-learning agent that uses a pre-trained Q-table to make decisions.
+    The Q-table is loaded from a file named 'q_table.pkl'.    This agent is designed to play as 'O'.
+    """
+
     def __init__(self):
         self.name = "Q-Learning Agent"
         with open('q_table.pkl', 'rb') as f:
@@ -140,5 +151,5 @@ class q_learning_agent:
         q_values = [self.q_table.get((state, move), 0.0) for move in available_moves]
         max_q_value = max(q_values)
         best_moves = [move for move, q_value in zip(available_moves, q_values) if q_value == max_q_value]
-        
+
         return random.choice(best_moves) if best_moves else None

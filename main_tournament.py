@@ -1,15 +1,15 @@
 import pygame
-import agents
 import numpy as np
+import agents
 
 # Initialize PyGame
 pygame.init()
 
 # Set screen dimensions
-screen_width = 400
-menu_height = 100
-screen_height = screen_width + menu_height
-screen = pygame.display.set_mode((screen_width, screen_height))
+SCREEN_WIDTH = 400
+MENU_HEIGHT = 100
+SCREEN_HEIGHT = SCREEN_WIDTH + MENU_HEIGHT
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 icon = pygame.image.load('/Users/georg/Projects/Tiny Games in Python/tic_tac_toe/tic_tac_toe/icon.png')
 pygame.display.set_icon(icon)  # Set the icon for the window
@@ -42,20 +42,20 @@ def initialize_game():
         turn = 'X'
         agent = agent_x
     
-    rounds = 0
-    turn_count_x = 0
-    turn_count_o = 0
-    move_time_x = 0
-    move_time_o = 0
+    r = 0
+    t_c_x = 0
+    t_c_o = 0
+    m_t_x = 0
+    m_t_o = 0
 
     print(f"Game_count: {game_count}")
-    return rounds, turn_count_x, turn_count_o, move_time_x, move_time_o
+    return r, t_c_x, t_c_o, m_t_x, m_t_o
 
 game_history = []  # To keep track of the game history
 game_count = 0  # To count the number of games played
 
-agent_x = agents.q_learning_agent()  # Initialize the agent for 'X'
-agent_o = agents.minimax_agent()  # Initialize the agent for 'O'
+agent_x = agents.QLearningAgent()  # Initialize the agent for 'X'
+agent_o = agents.MinimaxAgent()  # Initialize the agent for 'O'
 
 rounds, turn_count_x, turn_count_o, move_time_x, move_time_o = initialize_game()  # Initialize the game
 init_turn = turn  # Store the initial turn
@@ -151,47 +151,47 @@ while running:
     screen.fill(COLORS['BACKGROUND'])  # Black color
 
     # Draw the menu
-    pygame.draw.rect(screen, COLORS['MENU'], (0, 0, screen_width, menu_height))
+    pygame.draw.rect(screen, COLORS['MENU'], (0, 0, SCREEN_WIDTH, MENU_HEIGHT))
     font = pygame.font.Font(None, 20)
     text = font.render(f"Tic Tac Toe - {agent_x.name} X vs {agent_o.name} O", True, COLORS['TEXT_COLOR'])
-    text_rect = text.get_rect(center=(screen_width // 2, menu_height // 2))
+    text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, MENU_HEIGHT // 2))
     screen.blit(text, text_rect)
 
     # Draw the grid
     for x in range(1, 3):
-        pygame.draw.line(screen, COLORS['LINE_COLOR'], (x * screen_width // 3, menu_height), (x * screen_width // 3, screen_height), 2)
+        pygame.draw.line(screen, COLORS['LINE_COLOR'], (x * SCREEN_WIDTH // 3, MENU_HEIGHT), (x * SCREEN_WIDTH // 3, SCREEN_HEIGHT), 2)
     for y in range(1, 3):
-        pygame.draw.line(screen, COLORS['LINE_COLOR'], (0, y * screen_width // 3 + menu_height), (screen_width, y * screen_width // 3 + menu_height), 2)   
+        pygame.draw.line(screen, COLORS['LINE_COLOR'], (0, y * SCREEN_WIDTH // 3 + MENU_HEIGHT), (SCREEN_WIDTH, y * SCREEN_WIDTH // 3 + MENU_HEIGHT), 2)   
     
     # Draw the grid cells
     for y in range(3):
         for x in range(3):
             if grid[y][x] == 'X':
                 pygame.draw.line(screen, COLORS['X_COLOR'], 
-                                 (x * screen_width // 3 + 10, 
-                                  y * screen_width // 3 + menu_height + 10), 
-                                 (x * screen_width // 3 + screen_width // 3 - 10, 
-                                  y * screen_width // 3 + menu_height + screen_width // 3 - 10), 
+                                 (x * SCREEN_WIDTH // 3 + 10, 
+                                  y * SCREEN_WIDTH // 3 + MENU_HEIGHT + 10), 
+                                 (x * SCREEN_WIDTH // 3 + SCREEN_WIDTH // 3 - 10, 
+                                  y * SCREEN_WIDTH // 3 + MENU_HEIGHT + SCREEN_WIDTH // 3 - 10), 
                                  15)
                 pygame.draw.line(screen, COLORS['X_COLOR'], 
-                                 (x * screen_width // 3 + screen_width // 3 - 10, 
-                                  y * screen_width // 3 + menu_height + 10), 
-                                 (x * screen_width // 3 + 10, 
-                                  y * screen_width // 3 + menu_height + screen_width // 3 - 10), 
+                                 (x * SCREEN_WIDTH // 3 + SCREEN_WIDTH // 3 - 10, 
+                                  y * SCREEN_WIDTH // 3 + MENU_HEIGHT + 10), 
+                                 (x * SCREEN_WIDTH // 3 + 10, 
+                                  y * SCREEN_WIDTH // 3 + MENU_HEIGHT + SCREEN_WIDTH // 3 - 10), 
                                  15)
     for y in range(3):
         for x in range(3):
             if grid[y][x] == 'O':
                 pygame.draw.circle(screen, COLORS['O_COLOR'], 
-                                   (x * screen_width // 3 + screen_width // 6, 
-                                    y * screen_width // 3 + menu_height + screen_width // 6), 
-                                   screen_width // 6 - 10, 
+                                   (x * SCREEN_WIDTH // 3 + SCREEN_WIDTH // 6, 
+                                    y * SCREEN_WIDTH // 3 + MENU_HEIGHT + SCREEN_WIDTH // 6), 
+                                   SCREEN_WIDTH // 6 - 10, 
                                    15)
 
     # Update the display
     pygame.display.flip()
 
-with open(f'/Users/georg/Projects/Tiny Games in Python/tic_tac_toe/tic_tac_toe/results/{agent_x.name}_vs_{agent_o.name}.txt', 'w') as f:
+with open(f'/Users/georg/Projects/Tiny Games in Python/tic_tac_toe/tic_tac_toe/results/{agent_x.name}_vs_{agent_o.name}.txt', 'w', encoding='utf-8') as f:
     for game in game_history:
         f.write(f"{game[0]}, {game[1]}, {game[2]}, {game[3]}, {game[4]}, {game[5]}, {game[6]}\n")
 

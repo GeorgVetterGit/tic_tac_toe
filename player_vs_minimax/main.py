@@ -5,9 +5,9 @@
 # ]
 # ///
 
+import asyncio
 import pygame
 import numpy as np
-import asyncio
 
 # Initialize PyGame
 pygame.init()
@@ -15,13 +15,10 @@ pygame.init()
 clock = pygame.time.Clock()
 
 # Set screen dimensions
-screen_width = 400
-menu_height = 100
-screen_height = screen_width + menu_height
-screen = pygame.display.set_mode((screen_width, screen_height))
-
-#icon = pygame.image.load('/Users/georg/Projects/Tiny Games in Python/tic_tac_toe/tic_tac_toe/icon.png')
-#pygame.display.set_icon(icon)  # Set the icon for the window
+SCREEN_WIDTH = 400
+MENU_HEIGHT = 100
+SCREEN_HEIGHT = SCREEN_WIDTH + MENU_HEIGHT
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Set window title
 pygame.display.set_caption("Tic Tac Toe")
@@ -49,7 +46,8 @@ def initialize_game():
         turn = 'X'  # Player starts with 'X'
     return '', grid, turn
 
-class minimax_agent:
+class MinimaxAgent:
+    """Minimax Agent for Tic Tac Toe game."""
     def __init__(self, letter='O'):
         self.name = "Minimax Agent"
         self.letter = letter  # 'O' for the agent, 'X' for the opponent
@@ -135,34 +133,34 @@ class minimax_agent:
                 best_move = move
         return best_move
 
-agent = minimax_agent()  # Initialize the agent
+agent = MinimaxAgent()  # Initialize the agent
 game_over, grid, turn = initialize_game()  # Initialize the game
-cool_down_time = 3  # Cool down time in seconds
+COOL_DOWN_TIME = 3  # Cool down time in seconds
 start_wait = False  # Flag to indicate if we are waiting for the game to reset
 
 def game_over_message(winner):
     """Display the game over message."""
 
     # rectangle behind game over message
-    pygame.draw.rect(screen, COLORS['BLACK'], (38, screen_height // 2 - 32, screen_width - 76, menu_height + 4))
+    pygame.draw.rect(screen, COLORS['BLACK'], (38, SCREEN_HEIGHT // 2 - 32, SCREEN_WIDTH - 76, MENU_HEIGHT + 4))
 
     # rectangle behind game over message
-    pygame.draw.rect(screen, COLORS['BACKGROUND'], (40, screen_height // 2 - 30, screen_width - 80, menu_height))
+    pygame.draw.rect(screen, COLORS['BACKGROUND'], (40, SCREEN_HEIGHT // 2 - 30, SCREEN_WIDTH - 80, MENU_HEIGHT))
 
     font = pygame.font.Font(None, 36)
     text = font.render(f"{winner} wins!", True, COLORS['RED'])
-    text_rect = text.get_rect(center=(screen_width // 2, screen_height // 2))
+    text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     screen.blit(text, text_rect)
     # write time till game reset is 3 seconds
     font = pygame.font.Font(None, 24)
     text = font.render("Resetting in 3 seconds...", True, COLORS['TEXT_COLOR'])
-    text_rect = text.get_rect(center=(screen_width // 2, screen_height // 2 + 30))
+    text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 30))
     screen.blit(text, text_rect)
     # update the display
     pygame.display.flip()
 
 async def main():
-    global game_over, grid, turn, agent, screen, screen_width, screen_height, menu_height, COLORS, cool_down_time, start_wait
+    global game_over, grid, turn, agent, screen, SCREEN_WIDTH, SCREEN_HEIGHT, MENU_HEIGHT, COLORS, COOL_DOWN_TIME, start_wait
     # Game loop
     running = True
     while running:
@@ -174,10 +172,10 @@ async def main():
                 # Get the mouse position
                 mouse_x, mouse_y = event.pos
                 # Check if the click is within the grid area
-                if mouse_y > menu_height:
+                if mouse_y > MENU_HEIGHT:
                     # Calculate the grid cell based on mouse position
-                    cell_x = mouse_x // (screen_width // 3)
-                    cell_y = (mouse_y - menu_height) // (screen_width // 3)
+                    cell_x = mouse_x // (SCREEN_WIDTH // 3)
+                    cell_y = (mouse_y - MENU_HEIGHT) // (SCREEN_WIDTH // 3)
 
                     # Check if the cell is already occupied
                     if grid[cell_y][cell_x] is None:
@@ -222,48 +220,48 @@ async def main():
 
         # If the game is over, wait for a few seconds before resetting
         if start_wait:
-            end_tick = pygame.time.get_ticks() + cool_down_time * 1000
+            end_tick = pygame.time.get_ticks() + COOL_DOWN_TIME * 1000
             start_wait = False
 
         # Fill the background
         screen.fill(COLORS['BACKGROUND'])  # Black color
 
         # Draw the menu
-        pygame.draw.rect(screen, COLORS['MENU'], (0, 0, screen_width, menu_height))
+        pygame.draw.rect(screen, COLORS['MENU'], (0, 0, SCREEN_WIDTH, MENU_HEIGHT))
         font = pygame.font.Font(None, 25)
         text = font.render(f"Tic Tac Toe - Player X vs {agent.name} O", True, COLORS['TEXT_COLOR'])
-        text_rect = text.get_rect(center=(screen_width // 2, menu_height // 2))
+        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, MENU_HEIGHT // 2))
         screen.blit(text, text_rect)
 
         # Draw the grid
         for x in range(1, 3):
-            pygame.draw.line(screen, COLORS['LINE_COLOR'], (x * screen_width // 3, menu_height), (x * screen_width // 3, screen_height), 2)
+            pygame.draw.line(screen, COLORS['LINE_COLOR'], (x * SCREEN_WIDTH // 3, MENU_HEIGHT), (x * SCREEN_WIDTH // 3, SCREEN_HEIGHT), 2)
         for y in range(1, 3):
-            pygame.draw.line(screen, COLORS['LINE_COLOR'], (0, y * screen_width // 3 + menu_height), (screen_width, y * screen_width // 3 + menu_height), 2)   
+            pygame.draw.line(screen, COLORS['LINE_COLOR'], (0, y * SCREEN_WIDTH // 3 + MENU_HEIGHT), (SCREEN_WIDTH, y * SCREEN_WIDTH // 3 + MENU_HEIGHT), 2)   
         
         # Draw the grid cells
         for y in range(3):
             for x in range(3):
                 if grid[y][x] == 'X':
                     pygame.draw.line(screen, COLORS['X_COLOR'], 
-                                    (x * screen_width // 3 + 10, 
-                                    y * screen_width // 3 + menu_height + 10), 
-                                    (x * screen_width // 3 + screen_width // 3 - 10, 
-                                    y * screen_width // 3 + menu_height + screen_width // 3 - 10), 
+                                    (x * SCREEN_WIDTH // 3 + 10, 
+                                    y * SCREEN_WIDTH // 3 + MENU_HEIGHT + 10), 
+                                    (x * SCREEN_WIDTH // 3 + SCREEN_WIDTH // 3 - 10, 
+                                    y * SCREEN_WIDTH // 3 + MENU_HEIGHT + SCREEN_WIDTH // 3 - 10), 
                                     15)
                     pygame.draw.line(screen, COLORS['X_COLOR'], 
-                                    (x * screen_width // 3 + screen_width // 3 - 10, 
-                                    y * screen_width // 3 + menu_height + 10), 
-                                    (x * screen_width // 3 + 10, 
-                                    y * screen_width // 3 + menu_height + screen_width // 3 - 10), 
+                                    (x * SCREEN_WIDTH // 3 + SCREEN_WIDTH // 3 - 10, 
+                                    y * SCREEN_WIDTH // 3 + MENU_HEIGHT + 10), 
+                                    (x * SCREEN_WIDTH // 3 + 10, 
+                                    y * SCREEN_WIDTH // 3 + MENU_HEIGHT + SCREEN_WIDTH // 3 - 10), 
                                     15)
         for y in range(3):
             for x in range(3):
                 if grid[y][x] == 'O':
                     pygame.draw.circle(screen, COLORS['O_COLOR'], 
-                                    (x * screen_width // 3 + screen_width // 6, 
-                                        y * screen_width // 3 + menu_height + screen_width // 6), 
-                                    screen_width // 6 - 10, 
+                                    (x * SCREEN_WIDTH // 3 + SCREEN_WIDTH // 6, 
+                                        y * SCREEN_WIDTH // 3 + MENU_HEIGHT + SCREEN_WIDTH // 6), 
+                                    SCREEN_WIDTH // 6 - 10, 
                                     15)
         
         if game_over:
